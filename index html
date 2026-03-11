@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MyFlix</title>
+
+<style>
+
+/* BODY */
+
+body{
+margin:0;
+font-family:Arial;
+background:#0f0f0f;
+color:white;
+overflow-x:hidden;
+}
+
+/* LOADER */
+
+#loader{
+position:fixed;
+width:100%;
+height:100%;
+background:black;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:35px;
+z-index:9999;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+position:fixed;
+left:-220px;
+top:0;
+width:220px;
+height:100%;
+background:#000;
+padding:10px;
+transition:0.3s;
+z-index:1000;
+}
+
+.sidebar h2{
+color:red;
+}
+
+.sidebar ul{
+list-style:none;
+padding:0;
+}
+
+.sidebar li{
+padding:10px;
+cursor:pointer;
+}
+
+.sidebar li:hover{
+color:red;
+}
+
+/* MENU BUTTON */
+
+#menu{
+position:fixed;
+top:15px;
+left:15px;
+background:red;
+color:white;
+border:none;
+padding:8px 12px;
+font-size:20px;
+border-radius:5px;
+cursor:pointer;
+z-index:1001;
+}
+
+/* MAIN */
+
+.main{
+padding:20px;
+margin-top:50px;
+}
+
+/* HERO SLIDER */
+
+.hero{
+position:relative;
+height:60vh;
+overflow:hidden;
+border-radius:15px;
+}
+
+.slide{
+position:absolute;
+width:100%;
+height:100%;
+opacity:0;
+transition:1s;
+}
+
+.slide img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.slide.active{
+opacity:1;
+}
+
+.hero-text{
+position:absolute;
+bottom:40px;
+left:20px;
+}
+
+.hero-text h1{
+font-size:40px;
+}
+
+.hero-text button{
+padding:10px 20px;
+background:red;
+border:none;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+/* SEARCH */
+
+.search{
+margin-top:20px;
+}
+
+.search input{
+padding:10px;
+border-radius:20px;
+border:none;
+width:200px;
+}
+
+/* MOVIE SECTION */
+
+.section{
+margin-top:30px;
+}
+
+.movies{
+display:flex;
+gap:15px;
+overflow-x:auto;
+scroll-behavior:smooth;
+}
+
+.movies::-webkit-scrollbar{
+display:none;
+}
+
+/* MOVIE CARD */
+
+.movie{
+min-width:160px;
+height:240px;
+border-radius:15px;
+overflow:hidden;
+position:relative;
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,0.2);
+transition:0.3s;
+}
+
+.movie img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.movie:hover{
+
+transform:scale(1.08) rotate(-1deg);
+box-shadow:0 20px 40px rgba(255,0,0,0.6);
+
+}
+
+/* MOVIE INFO */
+
+.info{
+position:absolute;
+bottom:0;
+background:rgba(0,0,0,0.8);
+width:100%;
+padding:8px;
+opacity:0;
+transition:0.3s;
+}
+
+.movie:hover .info{
+opacity:1;
+}
+
+.info button{
+background:red;
+border:none;
+color:white;
+padding:5px 8px;
+border-radius:4px;
+margin-top:5px;
+cursor:pointer;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:700px){
+
+.hero-text h1{
+font-size:28px;
+}
+
+}
+#themeBtn{
+position:fixed;
+top:15px;
+right:15px;
+background:#222;
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+cursor:pointer;
+z-index:1001;
+}
+
+.light{
+background:white;
+color:black;
+}
+
+.bottom-nav{
+position:fixed;
+bottom:0;
+width:100%;
+background:#000;
+display:flex;
+justify-content:space-around;
+padding:10px;
+}
+
+.bottom-nav div{
+text-align:center;
+font-size:14px;
+cursor:pointer;
+}
+
+.bottom-nav p{
+margin:0;
+font-size:12px;
+}
+.rating{
+font-size:14px;
+margin-top:5px;
+color:gold;
+}
+#player{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.9);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:2000;
+}
+
+.player-box{
+width:90%;
+max-width:900px;
+}
+
+.player-box video{
+width:100%;
+border-radius:10px;
+}
+
+.player-box span{
+position:absolute;
+top:20px;
+right:30px;
+font-size:30px;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="loader">Loading MyFlix...</div>
+
+<button id="menu">☰</button>
+
+<div class="sidebar" id="sidebar">
+
+<h2>MyFlix</h2>
+
+<ul>
+<li>Home</li>
+<li>Trending</li>
+<li>Movies</li>
+<li>Series</li>
+<li>Favorites</li>
+</ul>
+
+</div>
+
+<div class="main">
+
+<!-- HERO -->
+
+<div class="hero">
+
+<div class="slide active">
+<img src="https://picsum.photos/1200/700?1">
+<div class="hero-text">
+<h1>Action Universe</h1>
+<button onclick="watch()">Watch</button>
+</div>
+</div>
+
+<div class="slide">
+<img src="https://picsum.photos/1200/700?2">
+<div class="hero-text">
+<h1>Anime Legends</h1>
+<button onclick="watch()">Watch</button>
+</div>
+</div>
+
+<div class="slide">
+<img src="https://picsum.photos/1200/700?3">
+<div class="hero-text">
+<h1>Fight Arena</h1>
+<button onclick="watch()">Watch</button>
+</div>
+</div>
+
+</div>
+
+<!-- SEARCH -->
+
+<div class="search">
+
+<input type="text" id="search" placeholder="Search movies">
+
+</div>
+
+<!-- MOVIES -->
+
+<div class="section">
+    <div class="rating">
+
+⭐ ⭐ ⭐ ⭐ ☆
+
+</div>
+
+<h2>Popular Movies</h2>
+
+<div class="movies" id="movies">
+
+<div class="movie" data-title="action hero">
+
+<img src="https://picsum.photos/200/300?4">
+
+<div class="info">
+<h4>Action Hero</h4>
+<button onclick="watch()">Watch</button>
+<button onclick="fav('Action Hero')">❤️</button>
+</div>
+
+</div>
+
+<div class="movie" data-title="anime war">
+
+<img src="https://picsum.photos/200/300?5">
+
+<div class="info">
+<h4>Anime War</h4>
+<button onclick="watch()">Watch</button>
+<button onclick="fav('Action Hero')">❤️</button>
+</div>
+
+</div>
+
+<div class="movie" data-title="boxing fight">
+
+<img src="https://picsum.photos/200/300?6">
+
+<div class="info">
+<h4>Boxing Fight</h4>
+<button onclick="watch()">Watch</button>
+<button onclick="fav()">❤️</button>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<div class="section">
+
+<h2>🔥 Trending</h2>
+
+<div class="movies">
+
+<div class="movie">
+<img src="https://picsum.photos/200/300?7">
+<div class="info">
+<h4>Speed Hunter</h4>
+<button onclick="watch()">Watch</button>
+</div>
+</div>
+
+<div class="movie">
+<img src="https://picsum.photos/200/300?8">
+<div class="info">
+<h4>Ninja Legend</h4>
+<button onclick="watch()">Watch</button>
+</div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* LOADER */
+
+window.onload=function(){
+
+setTimeout(()=>{
+
+document.getElementById("loader").style.display="none"
+
+},1500)
+
+}
+
+/* SIDEBAR */
+
+document.getElementById("menu").onclick=function(){
+
+let side=document.getElementById("sidebar")
+
+if(side.style.left=="0px")
+
+side.style.left="-220px"
+
+else
+
+side.style.left="0"
+
+}
+
+/* HERO SLIDER */
+
+let slides=document.querySelectorAll(".slide")
+
+let index=0
+
+setInterval(()=>{
+
+slides[index].classList.remove("active")
+
+index=(index+1)%slides.length
+
+slides[index].classList.add("active")
+
+},4000)
+
+/* SEARCH */
+
+let search=document.getElementById("search")
+
+let movies=document.querySelectorAll(".movie")
+
+search.onkeyup=function(){
+
+let value=search.value.toLowerCase()
+
+movies.forEach(m=>{
+
+let title=m.dataset.title
+
+if(title.includes(value))
+
+m.style.display="block"
+
+else
+
+m.style.display="none"
+
+})
+
+}
+
+function fav(movie){
+
+let favorites=JSON.parse(localStorage.getItem("favorites"))||[]
+
+favorites.push(movie)
+
+localStorage.setItem("favorites",JSON.stringify(favorites))
+
+alert("Saved to Favorites")
+
+}
+
+</script>
+<script>
+let themeBtn=document.getElementById("themeBtn")
+
+themeBtn.onclick=function(){
+
+document.body.classList.toggle("light")
+
+}
+</script>
+<script>
+    function watch(){
+
+document.getElementById("player").style.display="flex"
+
+}
+
+function closePlayer(){
+
+document.getElementById("player").style.display="none"
+
+}
+</script>
+<div class="bottom-nav">
+
+<div>🏠<p>Home</p></div>
+<div>🔥<p>Trending</p></div>
+<div>🎬<p>Movies</p></div>
+<div>❤️<p>Favorites</p></div>
+
+</div>
+<div id="player">
+
+<div class="player-box">
+
+<span onclick="closePlayer()">✖</span>
+
+<video id="movieVideo" controls>
+
+<source src="movie.mp4" type="video/mp4">
+
+</video>
+
+</div>
+
+</div>
+<scrip>
+    let row=document.querySelector(".movies")
+
+setInterval(()=>{
+
+row.scrollBy({
+
+left:200,
+
+behavior:"smooth"
+
+})
+
+},3000)
+</scrip>
+</body>
+
+</html>
